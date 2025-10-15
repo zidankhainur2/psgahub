@@ -1,20 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import TasksClient from "./TasksClient";
-
-export type Task = {
-  id: number;
-  title: string;
-  description: string | null;
-  due_date: string;
-  status: "todo" | "in_progress" | "done";
-  course_id: number;
-  courses: { name: string } | null;
-};
-
-export type Course = {
-  id: number;
-  name: string;
-};
+import type { Task, Course } from "@/types";
 
 export default async function TasksPage() {
   const supabase = createClient();

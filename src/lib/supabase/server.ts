@@ -10,20 +10,43 @@ export function createClient() {
     {
       cookies: {
         async get(name: string) {
-          return (await cookieStore).get(name)?.value;
+          try {
+            return (await cookieStore).get(name)?.value;
+          } catch {
+            return undefined;
+          }
         },
         async set(name: string, value: string, options: CookieOptions) {
           try {
-            (await cookieStore).set({ name, value, ...options });
+            // hanya izinkan set cookies jika konteksnya Server Action
+            if (typeof (await cookieStore).set === "function") {
+              (await cookieStore).set({ name, value, ...options });
+            } else {
+              console.warn(
+                `[Supabase] Skip set cookie (${name}) - not in Server Action context`
+              );
+            }
           } catch (error) {
-            console.error(error);
+            console.warn(
+              `[Supabase] Failed to set cookie (${name}):`,
+              (error as Error).message
+            );
           }
         },
         async remove(name: string, options: CookieOptions) {
           try {
-            (await cookieStore).set({ name, value: "", ...options });
+            if (typeof (await cookieStore).set === "function") {
+              (await cookieStore).set({ name, value: "", ...options });
+            } else {
+              console.warn(
+                `[Supabase] Skip remove cookie (${name}) - not in Server Action context`
+              );
+            }
           } catch (error) {
-            console.error(error);
+            console.warn(
+              `[Supabase] Failed to remove cookie (${name}):`,
+              (error as Error).message
+            );
           }
         },
       },
