@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -38,14 +39,17 @@ export default function LoginForm() {
     setError(null);
     const supabase = createClient();
 
+    toast.loading("Mencoba masuk...");
+
     const { error } = await supabase.auth.signInWithPassword({
       email: values.email,
       password: values.password,
     });
 
     if (error) {
-      setError(error.message);
+      toast.error(error.message);
     } else {
+      toast.success("Login berhasil!");
       router.push("/dashboard");
       router.refresh();
     }
@@ -80,7 +84,6 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-        {error && <p className="text-sm font-medium text-red-500">{error}</p>}
         <Button type="submit" className="w-full">
           Login
         </Button>

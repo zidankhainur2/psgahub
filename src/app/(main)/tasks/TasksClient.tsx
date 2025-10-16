@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Task, Course } from "./page";
+import type { Task, Course } from "@/types";
 import { deleteTask } from "./actions";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import TaskForm from "@/components/forms/TaskForm";
+import { toast } from "sonner";
 
 export default function TasksClient({
   tasks,
@@ -43,8 +44,12 @@ export default function TasksClient({
 
   const handleDelete = async (id: number) => {
     if (confirm("Apakah Anda yakin ingin menghapus tugas ini?")) {
-      await deleteTask(id);
-      window.location.reload();
+      const result = await deleteTask(id);
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
     }
   };
 
@@ -86,7 +91,7 @@ export default function TasksClient({
                       variant={task.status === "done" ? "default" : "secondary"}
                       className="mb-2 capitalize"
                     >
-                      {task.status.replace("_", " ")}
+                      {task.status?.replace("_", " ") ?? "Belum Diatur"}
                     </Badge>
                     <CardTitle>{task.title}</CardTitle>
                     <CardDescription className="pt-1">

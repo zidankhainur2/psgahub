@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,7 +15,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
-import { useState } from "react";
 
 const formSchema = z.object({
   fullName: z.string().min(3, { message: "Nama lengkap minimal 3 karakter." }),
@@ -23,9 +23,6 @@ const formSchema = z.object({
 });
 
 export default function RegisterForm() {
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -36,9 +33,9 @@ export default function RegisterForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setError(null);
-    setSuccess(null);
     const supabase = createClient();
+
+    toast.loading("Mendaftarkan akun...");
 
     const { error } = await supabase.auth.signUp({
       email: values.email,
@@ -50,10 +47,12 @@ export default function RegisterForm() {
       },
     });
 
+    toast.dismiss();
+
     if (error) {
-      setError(error.message);
+      toast.error(error.message);
     } else {
-      setSuccess(
+      toast.success(
         "Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi."
       );
       form.reset();
@@ -63,11 +62,6 @@ export default function RegisterForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {success && (
-          <p className="text-sm font-medium text-green-600">{success}</p>
-        )}
-        {error && <p className="text-sm font-medium text-red-500">{error}</p>}
-
         <FormField
           control={form.control}
           name="fullName"
