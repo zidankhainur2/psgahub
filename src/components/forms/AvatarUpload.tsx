@@ -3,10 +3,8 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import type { Profile } from "@/types";
 
 type AvatarUploadProps = {
   userId: string;
@@ -59,8 +57,14 @@ export default function AvatarUpload({
 
       onUpload(data.publicUrl);
       toast.success("Avatar berhasil diperbarui!");
-    } catch (error: any) {
-      toast.error(`Gagal mengunggah avatar: ${error.message}`);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(`Gagal mengunggah avatar: ${error.message}`);
+      } else {
+        toast.error(
+          "Gagal mengunggah avatar: Terjadi kesalahan yang tidak diketahui"
+        );
+      }
     } finally {
       setUploading(false);
     }

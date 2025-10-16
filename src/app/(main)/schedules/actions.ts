@@ -41,8 +41,14 @@ export async function createSchedule(
 
     revalidatePath("/schedules");
     return { success: true, message: "Jadwal berhasil dibuat." };
-  } catch (e: any) {
-    return { success: false, message: `Gagal membuat jadwal: ${e.message}` };
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      return { success: false, message: `Gagal membuat jadwal: ${e.message}` };
+    }
+    return {
+      success: false,
+      message: "Terjadi kesalahan yang tidak diketahui",
+    };
   }
 }
 
@@ -54,7 +60,16 @@ export async function deleteSchedule(id: number): Promise<FormResponse> {
 
     revalidatePath("/schedules");
     return { success: true, message: "Jadwal berhasil dihapus." };
-  } catch (e: any) {
-    return { success: false, message: `Gagal menghapus jadwal: ${e.message}` };
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      return {
+        success: false,
+        message: `Gagal menghapus jadwal: ${e.message}`,
+      };
+    }
+    return {
+      success: false,
+      message: "Terjadi kesalahan yang tidak diketahui",
+    };
   }
 }

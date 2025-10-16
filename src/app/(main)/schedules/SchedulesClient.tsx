@@ -1,5 +1,3 @@
-// app/(main)/schedules/SchedulesClient.tsx
-
 "use client";
 
 import { useState } from "react";
@@ -130,7 +128,7 @@ export default function SchedulesClient({
           <div className="text-center py-10 border-2 border-dashed rounded-lg">
             <h3 className="text-xl font-semibold">Jadwal Masih Kosong</h3>
             <p className="text-gray-500 mt-2">
-              Klik "Tambah Jadwal" untuk mengisi jadwal kuliah.
+              Klik &quot;Tambah Jadwal&quot; untuk mengisi jadwal kuliah.
             </p>
           </div>
         )}
