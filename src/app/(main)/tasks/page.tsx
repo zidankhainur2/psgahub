@@ -18,5 +18,10 @@ export default async function TasksPage() {
     return <p className="text-red-500">Gagal memuat data. Coba lagi nanti.</p>;
   }
 
-  return <TasksClient tasks={tasks || []} courses={courses || []} />;
+  return (
+    <TasksClient
+      tasks={(tasks as Task[]) || []}
+      courses={(courses as Course[]) || []}
+    />
+  );
 }

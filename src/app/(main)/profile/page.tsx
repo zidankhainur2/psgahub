@@ -24,7 +24,7 @@ export default async function ProfilePage() {
 
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select("full_name, linkedin_url, github_url")
+    .select("full_name, linkedin_url, github_url, avatar_url") 
     .eq("id", user.id)
     .single();
 

@@ -55,12 +55,13 @@ export default function TasksClient({
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Daftar Tugas</h1>
-        <Button onClick={handleAddNew}>Tambah Tugas Baru</Button>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold">Daftar Tugas</h1>
+        <Button onClick={handleAddNew} className="w-full sm:w-auto">
+          Tambah Tugas Baru
+        </Button>
       </div>
 
-      {/* Dialog Tambah/Edit */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
@@ -71,43 +72,35 @@ export default function TasksClient({
           <TaskForm
             task={selectedTask}
             courses={courses}
-            closeDialog={() => {
-              setIsDialogOpen(false);
-              window.location.reload();
-            }}
+            closeDialog={() => setIsDialogOpen(false)}
           />
         </DialogContent>
       </Dialog>
 
-      {/* Daftar Tugas */}
       {tasks.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {tasks.map((task) => (
-            <Card key={task.id}>
+            <Card key={task.id} className="flex flex-col">
               <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <Badge
-                      variant={task.status === "done" ? "default" : "secondary"}
-                      className="mb-2 capitalize"
-                    >
-                      {task.status?.replace("_", " ") ?? "Belum Diatur"}
-                    </Badge>
-                    <CardTitle>{task.title}</CardTitle>
-                    <CardDescription className="pt-1">
-                      {task.courses?.name || "Umum"}
-                    </CardDescription>
-                  </div>
-                </div>
+                <Badge
+                  variant={task.status === "done" ? "default" : "secondary"}
+                  className="mb-2 capitalize w-fit"
+                >
+                  {task.status?.replace("_", " ") ?? "Belum Diatur"}
+                </Badge>
+                <CardTitle className="line-clamp-2">{task.title}</CardTitle>
+                <CardDescription className="pt-1">
+                  {task.courses?.name || "Umum"}
+                </CardDescription>
               </CardHeader>
 
-              <CardContent>
-                <p className="text-sm text-gray-600">
-                  {task.description || "-"}
+              <CardContent className="flex-grow">
+                <p className="text-sm text-gray-600 line-clamp-3">
+                  {task.description || "Tidak ada deskripsi."}
                 </p>
               </CardContent>
 
-              <CardFooter className="flex justify-between items-center">
+              <CardFooter className="flex justify-between items-center mt-auto">
                 <span className="text-xs text-gray-500">
                   Tenggat:{" "}
                   {new Date(task.due_date).toLocaleDateString("id-ID", {
@@ -137,8 +130,10 @@ export default function TasksClient({
           ))}
         </div>
       ) : (
-        <div className="text-center py-10 border-2 border-dashed rounded-lg">
-          <h3 className="text-xl font-semibold">Belum Ada Tugas</h3>
+        <div className="text-center py-10 border-2 border-dashed rounded-lg bg-gray-50">
+          <h3 className="text-xl font-semibold text-gray-700">
+            Belum Ada Tugas
+          </h3>
           <p className="text-gray-500 mt-2">
             Klik “Tambah Tugas Baru” untuk memulai.
           </p>

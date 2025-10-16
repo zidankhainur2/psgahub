@@ -60,10 +60,15 @@ export default function SchedulesClient({
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Jadwal Kuliah</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold">Jadwal Kuliah</h1>
         {role === "admin" && (
-          <Button onClick={() => setIsDialogOpen(true)}>Tambah Jadwal</Button>
+          <Button
+            className="w-full sm:w-auto"
+            onClick={() => setIsDialogOpen(true)}
+          >
+            Tambah Jadwal
+          </Button>
         )}
       </div>
 
@@ -83,10 +88,10 @@ export default function SchedulesClient({
         {Object.keys(groupedSchedules).length > 0 ? (
           Object.entries(groupedSchedules).map(([day, daySchedules]) => (
             <div key={day}>
-              <h2 className="text-2xl font-semibold mb-4 border-b pb-2">
+              <h2 className="text-xl md:text-2xl font-semibold mb-4 border-b pb-2">
                 {daysOfWeek[parseInt(day)]}
               </h2>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {daySchedules.map((schedule) => (
                   <Card key={schedule.id}>
                     <CardHeader>
