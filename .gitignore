@@ -40,3 +40,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# testing
+/coverage
+
+# Jest
+jest.config.js
+jest.setup.js
+/tests/
+*.test.js
+*.test.ts
+*.test.tsx
+./tests/loginAndCreateTask.test.js
