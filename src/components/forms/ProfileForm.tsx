@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,16 +15,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
-import { useState } from "react";
 import type { User } from "@supabase/supabase-js";
+import AvatarUpload from "./AvatarUpload";
+import type { Profile } from "@/types";
+import { useRouter } from "next/navigation";
 
 type ProfileFormProps = {
   user: User | null;
-  profile: {
-    full_name: string | null;
-    linkedin_url: string | null;
-    github_url: string | null;
-  } | null;
+  profile: Pick<
+    Profile,
+    "full_name" | "linkedin_url" | "github_url" | "avatar_url"
+  > | null;
 };
 
 const formSchema = z.object({
@@ -41,7 +43,7 @@ const formSchema = z.object({
 });
 
 export default function ProfileForm({ user, profile }: ProfileFormProps) {
-  const [message, setMessage] = useState<string | null>(null);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,11 +54,26 @@ export default function ProfileForm({ user, profile }: ProfileFormProps) {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setMessage(null);
-    const supabase = createClient();
-
+  const handleAvatarUpload = async (newUrl: string) => {
     if (!user) return;
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("profiles")
+      .update({ avatar_url: newUrl })
+      .eq("id", user.id);
+
+    if (error) {
+      toast.error(`Gagal menyimpan URL avatar: ${error.message}`);
+    } else {
+      router.refresh();
+    }
+  };
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user) return;
+
+    const supabase = createClient();
+    toast.loading("Memperbarui profil...");
 
     const { error } = await supabase
       .from("profiles")
@@ -65,22 +82,36 @@ export default function ProfileForm({ user, profile }: ProfileFormProps) {
         linkedin_url: values.linkedinUrl,
         github_url: values.githubUrl,
       })
-      .eq("id", user.id); 
+      .eq("id", user.id);
+
+    toast.dismiss();
 
     if (error) {
-      setMessage(`Error: ${error.message}`);
+      toast.error(`Gagal memperbarui: ${error.message}`);
     } else {
-      setMessage("Profil berhasil diperbarui!");
+      toast.success("Profil berhasil diperbarui!");
+      router.refresh();
     }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" value={user?.email || ""} disabled />
-        </div>
+        <FormItem>
+          <FormLabel>Foto Profil</FormLabel>
+          <AvatarUpload
+            userId={user!.id}
+            currentAvatarUrl={profile?.avatar_url || null}
+            onUpload={handleAvatarUpload}
+          />
+        </FormItem>
+
+        <FormItem>
+          <FormLabel>Email</FormLabel>
+          <FormControl>
+            <Input type="email" value={user?.email || ""} disabled />
+          </FormControl>
+        </FormItem>
 
         <FormField
           control={form.control}
@@ -122,29 +153,12 @@ export default function ProfileForm({ user, profile }: ProfileFormProps) {
           )}
         />
 
-        {message && (
-          <p className="text-sm font-medium text-gray-800">{message}</p>
-        )}
-
-        <Button type="submit">Simpan Perubahan</Button>
+        <div className="flex justify-end pt-2">
+          <Button type="submit" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}
+          </Button>
+        </div>
       </form>
     </Form>
-  );
-}
-
-function Label({
-  htmlFor,
-  children,
-}: {
-  htmlFor: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label
-      htmlFor={htmlFor}
-      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-    >
-      {children}
-    </label>
   );
 }
