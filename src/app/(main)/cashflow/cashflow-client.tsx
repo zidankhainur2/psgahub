@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { CashFlow, Profile } from "@/types";
 import {
   Table,
@@ -44,7 +44,6 @@ import { Pencil, PlusCircle, Trash2 } from "lucide-react";
 import { useFormState, useFormStatus } from "react-dom";
 import { toast } from "sonner";
 
-// ==================== PERBAIKAN TYPE STATE ====================
 type FormState =
   | {
       data: string;
@@ -63,12 +62,10 @@ type FormState =
       };
     };
 
-// Harus beri nilai awal yang sesuai bentuk di atas
 const initialState: FormState = {
   error: {},
 };
 
-// ===============================================================
 
 type Member = Pick<Profile, "id" | "full_name">;
 type Props = {
@@ -91,9 +88,8 @@ export default function CashflowClient({ initialTransactions, members, isAdmin }
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<CashFlow | null>(null);
 
-  const [formState, formAction] = useFormState(createOrUpdateTransaction, initialState);
+  const [formState, formAction] = useActionState(createOrUpdateTransaction, initialState);
 
-  // ==================== PERBAIKAN NOTIFIKASI ====================
   useEffect(() => {
     if (formState?.data && isDialogOpen) {
       toast.success(formState.data);
@@ -103,7 +99,6 @@ export default function CashflowClient({ initialTransactions, members, isAdmin }
       toast.error("Gagal menyimpan. Periksa kembali isian Anda.");
     }
   }, [formState, isDialogOpen]);
-  // ===============================================================
 
   const handleDelete = async (id: number) => {
     try {
