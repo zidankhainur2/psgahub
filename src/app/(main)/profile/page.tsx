@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 
 export default async function ProfilePage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },

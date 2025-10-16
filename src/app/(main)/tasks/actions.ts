@@ -31,7 +31,7 @@ export async function createTask(formData: FormData): Promise<FormResponse> {
   }
 
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { error } = await supabase.from("tasks").insert(validatedFields.data);
 
     if (error) throw new Error(error.message);
@@ -69,7 +69,7 @@ export async function updateTask(
   }
 
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { error } = await supabase
       .from("tasks")
       .update(validatedFields.data)
@@ -95,7 +95,7 @@ export async function updateTask(
 
 export async function deleteTask(id: number): Promise<FormResponse> {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { error } = await supabase.from("tasks").delete().eq("id", id);
     if (error) throw new Error(error.message);
 

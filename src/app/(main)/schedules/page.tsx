@@ -3,7 +3,7 @@ import SchedulesClient from "./SchedulesClient";
 import type { Schedule, Course } from "@/types";
 
 export default async function SchedulesPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },

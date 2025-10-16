@@ -13,7 +13,7 @@ const formatCurrency = (amount: number) => {
 };
 
 export default async function CashflowPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },

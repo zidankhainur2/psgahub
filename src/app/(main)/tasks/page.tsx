@@ -3,7 +3,7 @@ import TasksClient from "./TasksClient";
 import type { Task, Course } from "@/types";
 
 export default async function TasksPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data: tasks, error: tasksError } = await supabase
     .from("tasks")

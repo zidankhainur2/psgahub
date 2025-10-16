@@ -41,7 +41,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createOrUpdateTransaction, deleteTransaction } from "./actions";
 import { Pencil, PlusCircle, Trash2 } from "lucide-react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
 
 type FormState =
@@ -66,7 +66,6 @@ const initialState: FormState = {
   error: {},
 };
 
-
 type Member = Pick<Profile, "id" | "full_name">;
 type Props = {
   initialTransactions: CashFlow[];
@@ -78,17 +77,31 @@ function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending}>
-      {pending ? "Menyimpan..." : isEditing ? "Simpan Perubahan" : "Tambah Transaksi"}
+      {pending
+        ? "Menyimpan..."
+        : isEditing
+        ? "Simpan Perubahan"
+        : "Tambah Transaksi"}
     </Button>
   );
 }
 
-export default function CashflowClient({ initialTransactions, members, isAdmin }: Props) {
-  const [transactions, setTransactions] = useState<CashFlow[]>(initialTransactions);
+export default function CashflowClient({
+  initialTransactions,
+  members,
+  isAdmin,
+}: Props) {
+  const [transactions, setTransactions] =
+    useState<CashFlow[]>(initialTransactions);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingTransaction, setEditingTransaction] = useState<CashFlow | null>(null);
+  const [editingTransaction, setEditingTransaction] = useState<CashFlow | null>(
+    null
+  );
 
-  const [formState, formAction] = useActionState(createOrUpdateTransaction, initialState);
+  const [formState, formAction] = useActionState(
+    createOrUpdateTransaction,
+    initialState
+  );
 
   useEffect(() => {
     if (formState?.data && isDialogOpen) {
@@ -187,7 +200,9 @@ export default function CashflowClient({ initialTransactions, members, isAdmin }
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
+                            <AlertDialogTitle>
+                              Apakah Anda yakin?
+                            </AlertDialogTitle>
                             <AlertDialogDescription>
                               Tindakan ini tidak dapat dibatalkan. Ini akan
                               menghapus transaksi secara permanen.
@@ -195,7 +210,9 @@ export default function CashflowClient({ initialTransactions, members, isAdmin }
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Batal</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(t.id)}>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(t.id)}
+                            >
                               Hapus
                             </AlertDialogAction>
                           </AlertDialogFooter>
@@ -241,7 +258,10 @@ export default function CashflowClient({ initialTransactions, members, isAdmin }
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Tipe</Label>
-                <Select name="type" defaultValue={editingTransaction?.type || "income"}>
+                <Select
+                  name="type"
+                  defaultValue={editingTransaction?.type || "income"}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Pilih tipe transaksi" />
                   </SelectTrigger>

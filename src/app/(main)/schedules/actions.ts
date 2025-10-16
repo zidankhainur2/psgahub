@@ -33,7 +33,7 @@ export async function createSchedule(
   }
 
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { error } = await supabase
       .from("schedules")
       .insert(validatedFields.data);
@@ -54,7 +54,7 @@ export async function createSchedule(
 
 export async function deleteSchedule(id: number): Promise<FormResponse> {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { error } = await supabase.from("schedules").delete().eq("id", id);
     if (error) throw new Error(error.message);
 

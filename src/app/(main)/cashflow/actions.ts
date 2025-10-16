@@ -26,7 +26,7 @@ type FormState = {
 };
 
 async function isAdminCheck() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -69,7 +69,7 @@ export async function createOrUpdateTransaction(
   }
 
   const { id, ...transactionData } = validatedFields.data;
-  const supabase = createClient();
+  const supabase = await createClient();
 
   let error;
   if (id) {
@@ -90,7 +90,7 @@ export async function createOrUpdateTransaction(
 export async function deleteTransaction(id: number) {
   await isAdminCheck();
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.from("cash_flow").delete().eq("id", id);
   if (error) {
     throw new Error(error.message);
