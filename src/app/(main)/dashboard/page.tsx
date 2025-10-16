@@ -87,16 +87,20 @@ export default async function DashboardPage() {
           </Card>
         </Link>
 
-        {/* Kartu Kas (masih statis) */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Kas Kelompok</CardTitle>
-            <CardDescription>Lihat status keuangan kelompok.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-500">(Fitur akan datang)</p>
-          </CardContent>
-        </Card>
+        {/* Kartu Kas sudah dinamis */}
+        <Link href="/cashflow">
+          <Card className="hover:bg-gray-50 transition-colors cursor-pointer">
+            <CardHeader>
+              <CardTitle>Kas Kelompok</CardTitle>
+              <CardDescription>
+                Pantau pemasukan dan pengeluaran.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-500">Klik untuk melihat detail transaksi kas.</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </div>
   );
