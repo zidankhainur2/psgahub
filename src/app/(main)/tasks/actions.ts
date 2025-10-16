@@ -12,7 +12,9 @@ const taskSchema = z.object({
   course_id: z.coerce.number().min(1, "Mata kuliah wajib dipilih."),
 });
 
-export async function createTask(formData: FormData) {
+type FormResponse = { success: boolean; message: string };
+
+export async function createTask(formData: FormData): Promise<FormResponse> {
   const validatedFields = taskSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
@@ -21,25 +23,23 @@ export async function createTask(formData: FormData) {
     course_id: formData.get("course_id"),
   });
 
-  if (!validatedFields.success) {
-    return { error: validatedFields.error.flatten().fieldErrors };
+  try {
+    const supabase = createClient();
+    const { error } = await supabase.from("tasks").insert(validatedFields.data);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath("/tasks");
+    return { success: true, message: "Tugas berhasil dibuat." };
+  } catch (e: any) {
+    return { success: false, message: `Gagal membuat tugas: ${e.message}` };
   }
-
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from("tasks")
-    .insert(validatedFields.data)
-    .single();
-
-  if (error) {
-    return { error: "Gagal membuat tugas." };
-  }
-
-  revalidatePath("/tasks"); 
-  return { message: "Tugas berhasil dibuat." };
 }
 
-export async function updateTask(id: number, formData: FormData) {
+export async function updateTask(
+  id: number,
+  formData: FormData
+): Promise<FormResponse> {
   const validatedFields = taskSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
@@ -48,32 +48,29 @@ export async function updateTask(id: number, formData: FormData) {
     course_id: formData.get("course_id"),
   });
 
-  if (!validatedFields.success) {
-    return { error: validatedFields.error.flatten().fieldErrors };
+  try {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("tasks")
+      .update(validatedFields.data)
+      .eq("id", id);
+
+    revalidatePath("/tasks");
+    return { success: true, message: "Tugas berhasil diperbarui." };
+  } catch (e: any) {
+    return { success: false, message: `Gagal memperbarui tugas: ${e.message}` };
   }
-
-  const supabase = createClient();
-  const { error } = await supabase
-    .from("tasks")
-    .update(validatedFields.data)
-    .eq("id", id);
-
-  if (error) {
-    return { error: "Gagal memperbarui tugas." };
-  }
-
-  revalidatePath("/tasks");
-  return { message: "Tugas berhasil diperbarui." };
 }
 
-export async function deleteTask(id: number) {
-  const supabase = createClient();
-  const { error } = await supabase.from("tasks").delete().eq("id", id);
+export async function deleteTask(id: number): Promise<FormResponse> {
+  try {
+    const supabase = createClient();
+    const { error } = await supabase.from("tasks").delete().eq("id", id);
+    if (error) throw new Error(error.message);
 
-  if (error) {
-    return { error: "Gagal menghapus tugas." };
+    revalidatePath("/tasks");
+    return { success: true, message: "Tugas berhasil dihapus." };
+  } catch (e: any) {
+    return { success: false, message: `Gagal menghapus tugas: ${e.message}` };
   }
-
-  revalidatePath("/tasks");
-  return { message: "Tugas berhasil dihapus." };
 }

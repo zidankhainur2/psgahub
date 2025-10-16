@@ -22,7 +22,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import type { Task, Course } from "@/app/(main)/tasks/page";
+import type { Task, Course } from "@/types";
+import { toast } from "sonner";
 
 const taskSchema = z.object({
   title: z.string().min(3, "Judul minimal 3 karakter."),
@@ -71,12 +72,19 @@ export default function TaskForm({
       }
     });
 
-    if (task) {
-      await updateTask(task.id, formData);
+    const action = task ? updateTask(task.id, formData) : createTask(formData);
+
+    toast.loading("Menyimpan tugas...");
+
+    const result = await action;
+    toast.dismiss();
+
+    if (result.success) {
+      toast.success(result.message);
+      closeDialog();
     } else {
-      await createTask(formData);
+      toast.error(result.message);
     }
-    closeDialog();
   };
 
   return (

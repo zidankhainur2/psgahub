@@ -16,46 +16,45 @@ const scheduleSchema = z.object({
   location: z.string().min(2, "Lokasi minimal 2 karakter."),
 });
 
-export async function createSchedule(formData: FormData) {
-  const rawData = Object.fromEntries(formData.entries());
-  console.log("📥 Data form diterima:", rawData);
+type FormResponse = { success: boolean; message: string };
 
-  const validated = scheduleSchema.safeParse(rawData);
+export async function createSchedule(
+  formData: FormData
+): Promise<FormResponse> {
+  const validatedFields = scheduleSchema.safeParse(
+    Object.fromEntries(formData.entries())
+  );
 
-  if (!validated.success) {
-    console.error("❌ Validasi gagal:", validated.error.flatten());
-    return { error: validated.error.flatten().fieldErrors };
+  if (!validatedFields.success) {
+    const firstError = Object.values(
+      validatedFields.error.flatten().fieldErrors
+    )[0]?.[0];
+    return { success: false, message: firstError || "Data tidak valid." };
   }
 
-  const data = validated.data;
-  console.log("✅ Data tervalidasi:", data);
+  try {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("schedules")
+      .insert(validatedFields.data);
+    if (error) throw new Error(error.message);
 
-  const supabase = createClient();
-  const { data: inserted, error } = await supabase
-    .from("schedules")
-    .insert(data)
-    .select();
-
-  if (error) {
-    console.error("❌ Gagal insert ke Supabase:", error);
-    return { error: error.message || "Gagal membuat jadwal." };
+    revalidatePath("/schedules");
+    return { success: true, message: "Jadwal berhasil dibuat." };
+  } catch (e: any) {
+    return { success: false, message: `Gagal membuat jadwal: ${e.message}` };
   }
-
-  console.log("✅ Jadwal berhasil dibuat:", inserted);
-  revalidatePath("/schedules");
-
-  return { message: "Jadwal berhasil dibuat." };
 }
 
-export async function deleteSchedule(id: number) {
-  const supabase = createClient();
-  const { error } = await supabase.from("schedules").delete().eq("id", id);
+export async function deleteSchedule(id: number): Promise<FormResponse> {
+  try {
+    const supabase = createClient();
+    const { error } = await supabase.from("schedules").delete().eq("id", id);
+    if (error) throw new Error(error.message);
 
-  if (error) {
-    console.error("❌ Gagal hapus:", error);
-    return { error: "Gagal menghapus jadwal." };
+    revalidatePath("/schedules");
+    return { success: true, message: "Jadwal berhasil dihapus." };
+  } catch (e: any) {
+    return { success: false, message: `Gagal menghapus jadwal: ${e.message}` };
   }
-
-  revalidatePath("/schedules");
-  return { message: "Jadwal berhasil dihapus." };
 }
