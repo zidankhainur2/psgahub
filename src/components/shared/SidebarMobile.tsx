@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  ListTodo,
-  CalendarDays,
-  CircleDollarSign,
-  Package2,
-} from "lucide-react";
+import { Home, ListTodo, CalendarDays, CircleDollarSign } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -30,7 +24,7 @@ export default function SidebarMobile() {
             href={link.href}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-              pathname === link.href && "bg-muted text-primary" 
+              pathname === link.href && "bg-muted text-primary"
             )}
           >
             <link.icon className="h-4 w-4" />
