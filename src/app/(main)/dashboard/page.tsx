@@ -111,16 +111,22 @@ export default async function DashboardPage() {
             </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Kas</CardTitle>
-            <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Rp 500.000</div>
-            <p className="text-xs text-muted-foreground">(Fitur akan datang)</p>
-          </CardContent>
-        </Card>
+        <Link href="/cashflow">
+          <Card className="hover:bg-accent transition-colors cursor-pointer">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Kas Kelompok
+              </CardTitle>
+              <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">Rp 500.000</div>
+              <p className="text-xs text-muted-foreground">
+                Klik untuk melihat detail transaksi.
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-5">

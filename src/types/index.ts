@@ -43,7 +43,8 @@ export type CashFlow = {
   type: "income" | "expense";
   transaction_date: string | null; // date
   member_id: string | null; // uuid
-  profiles: { full_name: string | null } | null;
+  profiles: { full_name: string | null }[];
+
 };
 
 export type Announcement = {
