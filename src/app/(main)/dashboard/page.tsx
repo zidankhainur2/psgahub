@@ -31,6 +31,14 @@ const getDaysLeft = (dueDate: string) => {
   return { text: `${diffDays} hari lagi`, color: "text-gray-500" };
 };
 
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(amount);
+};
+
 export default async function DashboardPage() {
   const supabase = createClient();
   const {
@@ -44,30 +52,49 @@ export default async function DashboardPage() {
   const today = new Date();
   const dayOfWeek = today.getDay() === 0 ? 7 : today.getDay();
 
-  const [profileRes, unfinishedTasksRes, todaySchedulesRes, upcomingTasksRes] =
-    await Promise.all([
-      supabase.from("profiles").select("full_name").eq("id", user.id).single(),
-      supabase
-        .from("tasks")
-        .select("*", { count: "exact", head: true })
-        .neq("status", "done"),
-      supabase
-        .from("schedules")
-        .select("*, courses(name, lecturer)")
-        .eq("day_of_week", dayOfWeek)
-        .order("start_time"),
-      supabase
-        .from("tasks")
-        .select("*, courses(name)")
-        .neq("status", "done")
-        .order("due_date", { ascending: true })
-        .limit(3),
-    ]);
+  const [
+    profileRes,
+    unfinishedTasksRes,
+    todaySchedulesRes,
+    upcomingTasksRes,
+    cashFlowRes,
+  ] = await Promise.all([
+    supabase.from("profiles").select("full_name").eq("id", user.id).single(),
+    supabase
+      .from("tasks")
+      .select("*", { count: "exact", head: true })
+      .neq("status", "done"),
+    supabase
+      .from("schedules")
+      .select("*, courses(name, lecturer)")
+      .eq("day_of_week", dayOfWeek)
+      .order("start_time"),
+    supabase
+      .from("tasks")
+      .select("*, courses(name)")
+      .neq("status", "done")
+      .order("due_date", { ascending: true })
+      .limit(3),
+    supabase.from("cash_flow").select("amount, type"),
+  ]);
 
   const profile = profileRes.data;
   const unfinishedTasksCount = unfinishedTasksRes.count;
   const todaySchedules = todaySchedulesRes.data;
   const upcomingTasks = upcomingTasksRes.data;
+  const cashFlowData = cashFlowRes.data;
+
+  // Hitung saldo kas
+  let totalIncome = 0;
+  let totalExpense = 0;
+  cashFlowData?.forEach((t) => {
+    if (t.type === "income") {
+      totalIncome += Number(t.amount);
+    } else {
+      totalExpense += Number(t.amount);
+    }
+  });
+  const balance = totalIncome - totalExpense;
 
   return (
     <div className="flex flex-col gap-6">
@@ -120,7 +147,9 @@ export default async function DashboardPage() {
               <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">Rp 500.000</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(balance)}
+              </div>
               <p className="text-xs text-muted-foreground">
                 Klik untuk melihat detail transaksi.
               </p>
