@@ -44,7 +44,6 @@ export type CashFlow = {
   transaction_date: string | null; // date
   member_id: string | null; // uuid
   profiles: { full_name: string | null }[];
-
 };
 
 export type Announcement = {
@@ -56,7 +55,21 @@ export type Announcement = {
   profiles: { full_name: string | null } | null;
 };
 
-export type CourseGroup = {
-  course_id: number;
-  member_id: string;
+export type Group = {
+  id: number;
+  name: string;
+  course_id: number | null;
+  created_at: string;
+  created_by: string | null;
+  courses: { name: string } | null;
+  members?: GroupMember[];
 };
+
+export type GroupMember = {
+  group_id: number;
+  user_id: string;
+  role: "member" | "leader";
+  joined_at: string;
+  profiles: { full_name: string | null; avatar_url: string | null } | null;
+};
+

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ListTodo, CalendarDays, CircleDollarSign } from "lucide-react";
+import { Home, ListTodo, CalendarDays, CircleDollarSign, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -10,6 +10,7 @@ const navLinks = [
   { href: "/tasks", label: "Tugas", icon: ListTodo },
   { href: "/schedules", label: "Jadwal", icon: CalendarDays },
   { href: "/cashflow", label: "Manajemen Kas", icon: CircleDollarSign },
+  { href: "/groups", label: "Grup", icon: Users },
 ];
 
 export default function SidebarMobile() {

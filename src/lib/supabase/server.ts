@@ -9,45 +9,18 @@ export async function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        async get(name: string) {
-          try {
-            return (await cookieStore).get(name)?.value;
-          } catch {
-            return undefined;
-          }
+        get(name: string) {
+          return cookieStore.get(name)?.value;
         },
-        async set(name: string, value: string, options: CookieOptions) {
+        set(name: string, value: string, options: CookieOptions) {
           try {
-            // hanya izinkan set cookies jika konteksnya Server Action
-            if (typeof (await cookieStore).set === "function") {
-              (await cookieStore).set({ name, value, ...options });
-            } else {
-              console.warn(
-                `[Supabase] Skip set cookie (${name}) - not in Server Action context`
-              );
-            }
-          } catch (error) {
-            console.warn(
-              `[Supabase] Failed to set cookie (${name}):`,
-              (error as Error).message
-            );
-          }
+            cookieStore.set({ name, value, ...options });
+          } catch (error) {}
         },
-        async remove(name: string, options: CookieOptions) {
+        remove(name: string, options: CookieOptions) {
           try {
-            if (typeof (await cookieStore).set === "function") {
-              (await cookieStore).set({ name, value: "", ...options });
-            } else {
-              console.warn(
-                `[Supabase] Skip remove cookie (${name}) - not in Server Action context`
-              );
-            }
-          } catch (error) {
-            console.warn(
-              `[Supabase] Failed to remove cookie (${name}):`,
-              (error as Error).message
-            );
-          }
+            cookieStore.set({ name, value: "", ...options });
+          } catch (error) {}
         },
       },
     }
